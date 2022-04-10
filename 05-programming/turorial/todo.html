@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <title>TODO List Example</title>
+
+    <style>
+        body {
+            margin: 0;
+            min-width: 720px;
+            font-family: sans-serif;
+        }
+
+        /* Include the padding and border in an element's total width and height */
+        * {
+            box-sizing: border-box;
+        }
+
+        /*********************************************
+         * Header
+         ********************************************/
+        .header {
+            background-color: black;
+            height: 155px;
+            color: white;
+            padding: 10px;
+            margin: 0;
+        }
+
+        input {
+            margin: 0;
+            border: none;
+            padding: 10px;
+            float: left;
+            font-size: 16px;
+        }
+
+        .addButton {
+            float: left;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .addButton:hover {
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+        label {
+            float: left;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        /*********************************************
+         * TODO_ITEMS List
+         ********************************************/
+
+        /* Remove margins and padding from the ul element (unordered lis)  so that the list is flushed with the
+           browser borders instead of leaving a gap */
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Each li element with the ul will hold a todo_item */
+        ul li {
+            cursor: pointer;
+            padding: 12px;
+            list-style-type: none;
+            background: #eee;
+            font-size: 18px;
+        }
+
+        /* Set all odd list items to a different background colour (zebra-stripes) */
+        ul li:nth-child(odd) {
+            background: #f9f9f9;
+        }
+
+        /* Darker background-color on hover */
+        ul li:hover {
+            background: #ddd;
+        }
+
+        /* When clicked on, change the background colour and strike out text */
+        ul li.checked {
+            background: #888;
+            color: #fff;
+            text-decoration: line-through;
+        }
+
+        /* CSS style to hide the "tick" symbol if an item status is not set to "DONE"
+           This is done in code - see the addTodoItemToDisplay() function where the element is classList.toggle() */
+        .tickHidden {
+            float: left;
+            padding-left: 15px;
+            padding-right: 15px;
+            visibility: hidden;
+        }
+
+        /* When clicked on, also show the "tick" symbol.  Again this is done in code.
+           see the addTodoItemToDisplay() function  */
+        .tickVisible {
+            visibility: visible;
+        }
+
+        .close {
+            padding-left: 5px;
+            padding-right: 5px;
+            float: right;
+        }
+
+        /* This add hover selector to the close class. That is any elements attached to the close class with change to
+           a RED with WHITE background.  In this case, this will be the close "button" for each of the todo_item
+        */
+        .close:hover {
+            background-color: red;
+            color: white;
+        }
+    </style>
+</head>
+
+
+<!---------------------------------------------------------------------------------------
+  A onload trigger is added to the body which will call the readTodoItems() function
+  which will in turn send a REST API GET request to the microservice to read the todo_list
+  from the DB
+---------------------------------------------------------------------------------------->
+<body onload="readTodoItems()">
+
+<!---------------------------------------------------------------------------------------
+  This is the Header
+---------------------------------------------------------------------------------------->
+<div class="header">
+    <h1>TODO List Example</h1>
+    <hr/>
+    <form action="javascript:addNewTodoItem()" style="margin-top: 10px">
+        <label for="newTodoDescription">Please enter a TODO Item</label>
+        <input type="text" id="newTodoDescription" placeholder="Title...">
+        <input type="submit" value="Add" class="addButton"/>
+    </form>
+</div>
+
+<!---------------------------------------------------------------------------------------
+  HTML element to hold the todoList.  This is where all the TodoItems will be displayed
+---------------------------------------------------------------------------------------->
+<ul id="todoList">
+    <!-- This list is empty at start and is populated by the readTodoItems() function
+         called by the onload trigger (see the body element above)
+     -->
+</ul>
+
+<!---------------------------------------------------------------------------------------
+  Scripts
+---------------------------------------------------------------------------------------->
+<script>
+    /****************************************************************************
+     * Add a new TodoItem.
+     *
+     * 1) send an update to the DB
+     * 2) if successful then add the item to the list
+     ****************************************************************************/
+    function addNewTodoItem(newItemValue) {
+
+        // Get the value from the Input field in the FORM
+        let todoValue = document.getElementById("newTodoDescription").value.trim();
+
+        // Check that a value have added
+        if (todoValue === "") {
+            alert("Please enter a value for your item");
+        }
+        createTodoItem(todoValue);
+        document.getElementById("newTodoDescription").value = "";
+    }
+
+    /****************************************************************************
+     * This function will add the a new todo item to the UL element
+     * Specifically this will add:
+     *
+     *   <li>the item description<span class="close">X</>li>
+     *
+     * 1) add to DB
+     * 2) if successful then add the item to the list
+     *
+     ****************************************************************************/
+    function addTodoItemToDisplay(item) {
+        let todoItemNode = document.createElement("li");
+        let descriptionTextNode = document.createTextNode(item["description"]);
+        todoItemNode.appendChild(descriptionTextNode);
+
+        document.getElementById("todoList").appendChild(todoItemNode);
+
+        let tickSpanNode = document.createElement("SPAN");
+        let tickText = document.createTextNode("\u2713");  // \u2713 is unicode for the tick symbol
+        tickSpanNode.appendChild(tickText);
+        todoItemNode.appendChild(tickSpanNode);
+        tickSpanNode.className = "tickHidden";
+
+        let closeSpanNode = document.createElement("SPAN");
+        let closeText = document.createTextNode("X");
+        closeSpanNode.className = "close";
+        closeSpanNode.appendChild(closeText);
+        todoItemNode.appendChild(closeSpanNode);
+
+        closeSpanNode.onclick = function (event) {
+            // When the use press the "X" button, the click event is normally also passed to its parent element.
+            // (i.e. the element containing the <SPAN>). In the case the LI element that is holding the TodoItem
+            // which would have resulted in a toggle of item between "DONE" and "NEW"
+            //
+            // stopPropagation() tells the event not to propagate
+            event.stopPropagation();
+
+            if (confirm("Are you sure that you want to delete " + item.description + "?")) {
+                deleteTodoItem(item["id"]);
+
+                // Remove the HTML list element that is holding this todo item
+                todoItemNode.remove();
+            }
+        }
+
+        todoItemNode.onclick = function () {
+            if (item["status"] === "NEW") {
+                item["status"] = "DONE"
+            } else {
+                item["status"] = "NEW"
+            }
+
+            updateTodoItem(item);
+
+            todoItemNode.classList.toggle("checked");
+            tickSpanNode.classList.toggle("tickVisible");
+        }
+
+        if (item["status"] !== "NEW") {
+            todoItemNode.classList.toggle("checked");
+            tickSpanNode.classList.toggle("tickVisible");
+        }
+    }
+
+    /****************************************************************************
+     * CRUD functions calling the REST API
+     ****************************************************************************/
+
+    function createTodoItem(todoItemDescription) {
+
+        // Create a new JSON object for the new item with the status of NEW
+        // Since the id is generated by the microservice, we will use -1 as a dummy
+        // If the POST is successful the microservice will store the new item in the database
+        // and returns a JSON via the response with the generated id for the new item
+        const newItem = {"description": todoItemDescription, "status": "NEW"};
+        const requestOptions = {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(newItem)
+        };
+        fetch('http://localhost:5066/todo', requestOptions)
+            // get the JSON content from the response
+            .then((response) => {
+                if (!response.ok) {
+                    alert("An error has occurred.  Unable to create the TODO item")
+                    throw response.status;
+                } else return response.json();
+            })
+
+            // add the item to the UL element so that it will appear in the browser
+            .then(item => addTodoItemToDisplay(item));
+    }
+
+    // Load the list - expecting an array of todo_items to be returned
+    function readTodoItems() {
+        fetch('http://localhost:5066/todo')
+            // get the JSON content from the response
+            .then((response) => {
+                if (!response.ok) {
+                    alert("An error has occurred.  Unable to read the TODO list")
+                    throw response.status;
+                } else return response.json();
+            })
+            // Add the items to the UL element so that it can be seen
+            // As items is an array, we will the array.map function to through the array and add item to the UL element
+            // for display
+            .then(items => items.map(item => addTodoItemToDisplay(item)));
+    }
+
+    function updateTodoItem(item) {
+        const requestOptions = {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(item)
+        };
+        fetch('http://localhost:5066/todo/' + item.id, requestOptions)
+            .then((response) => {
+                if (!response.ok) {
+                    alert("An error has occurred.  Unable to UPDATE the TODO item")
+                    throw response.status;
+                } else return response.json();
+            })
+    }
+
+    function deleteTodoItem(todoItemId) {
+        fetch("http://localhost:5066/todo/" + todoItemId, {method: 'DELETE'})
+            .then((response) => {
+                if (!response.ok) {
+                    alert("An error has occurred.  Unable to DELETE the TODO item")
+                    throw response.status;
+                } else return response.json();
+            })
+    }
+</script>
+</body>
+</html>
