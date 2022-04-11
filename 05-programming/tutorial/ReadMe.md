@@ -1,5 +1,37 @@
 # C# MicroService REST API Tutorial
 
+---
+
+## Content
+
+- [C# MicroService REST API Tutorial](#c-microservice-rest-api-tutorial)
+  - [Content](#content)
+  - [Creating Web API](#creating-web-api)
+  - [Overview](#overview)
+  - [Tutorial](#tutorial)
+    - [Creating a RESTful API with C# & ASP.NET Core](#creating-a-restful-api-with-c--aspnet-core)
+    - [Setup a new project in Visual Studio](#setup-a-new-project-in-visual-studio)
+    - [Entity Framework](#entity-framework)
+    - [Verify SetUp](#verify-setup)
+    - [Setup a model, database context and database service](#setup-a-model-database-context-and-database-service)
+    - [Create a controller to integrate with the service](#create-a-controller-to-integrate-with-the-service)
+    - [Configure the created components and setup the database](#configure-the-created-components-and-setup-the-database)
+    - [Run the application](#run-the-application)
+    - [Update the launchUrl to remove Swagger (Optional)](#update-the-launchurl-to-remove-swagger-optional)
+  - [Testing the APIs on Postman](#testing-the-apis-on-postman)
+    - [Exercise (optional)](#exercise-optional)
+      - [Clue to solving exercise](#clue-to-solving-exercise)
+  - [Testing Code With Html Page](#testing-code-with-html-page)
+    - [What is Cross Origin?](#what-is-cross-origin)
+    - [What is Same origin?](#what-is-same-origin)
+      - [So why do we have an issue with Origin?](#so-why-do-we-have-an-issue-with-origin)
+      - [How do we fix this issue and test with our html page?](#how-do-we-fix-this-issue-and-test-with-our-html-page)
+      - [COR Summary](#cor-summary)
+  - [Publish onthe CLI](#publish-onthe-cli)
+    - [Check the location of the file and you should see an exe file like below](#check-the-location-of-the-file-and-you-should-see-an-exe-file-like-below)
+
+---
+
 ## Creating Web API
 A Web API is an **application programming interface** for the Web. A Browser API can extend the functionality of a web browser. A Server API can extend the functionality of a web server.
 
@@ -552,3 +584,24 @@ app.Run();
 - Is not a security feature, CORS relaxes security. An API is not safer by allowing CORS. For more information, see How CORS works.
 - Allows a server to explicitly allow some cross-origin requests while rejecting others.
 - Is safer and more flexible than earlier techniques, such as JSONP.
+
+## Publish onthe CLI
+To publish, open the command line of your project and type dotnet ```publish -c Release```. This creates the executables that you can push to your desired location
+
+![](./images/publish-1.png)
+
+### Check the location of the file and you should see an exe file like below
+
+![](./images/publish-2.png)
+
+Launch the TodoItems.exe by double clicking on the file to run it and you see below:
+
+![](./images/publish-3.png)
+
+The image shows that it is listening to localhost:5000. Open the html script “Todo.html” and replace the localhost port.
+
+![](./images/publish-4.png)
+
+After the changes, you can now run your html script on a browser and you will see the same result as when running the WEB API on visual studio.
+
+![](./images/publish-5.png)
