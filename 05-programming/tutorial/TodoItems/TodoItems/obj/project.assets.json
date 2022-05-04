@@ -2062,11 +2062,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "S:\\Downloads\\QaCs_Avanade\\Practicals\\TodoItems\\TodoItems\\TodoItems.csproj",
+      "projectUniqueName": "C:\\Users\\Phillip\\OneDrive\\Documents\\Work\\Avanade\\2022\\05-programming\\tutorial\\TodoItems\\TodoItems\\TodoItems.csproj",
       "projectName": "TodoItems",
-      "projectPath": "S:\\Downloads\\QaCs_Avanade\\Practicals\\TodoItems\\TodoItems\\TodoItems.csproj",
+      "projectPath": "C:\\Users\\Phillip\\OneDrive\\Documents\\Work\\Avanade\\2022\\05-programming\\tutorial\\TodoItems\\TodoItems\\TodoItems.csproj",
       "packagesPath": "C:\\Users\\Phillip\\.nuget\\packages\\",
-      "outputPath": "S:\\Downloads\\QaCs_Avanade\\Practicals\\TodoItems\\TodoItems\\obj\\",
+      "outputPath": "C:\\Users\\Phillip\\OneDrive\\Documents\\Work\\Avanade\\2022\\05-programming\\tutorial\\TodoItems\\TodoItems\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Phillip\\AppData\\Roaming\\NuGet\\NuGet.Config",
